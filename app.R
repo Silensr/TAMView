@@ -8,35 +8,78 @@
 #
 
 library(shiny)
+library(dplyr)
 
 source('./fromDB.R')
-# Define UI for application that draws a histogram
+
+
+# Interface
 ui <- fluidPage(
 
-    # Application title
-    titlePanel("Old Faithful Geyser Data"),
+    # Titre
+    titlePanel("Dashboard data TAM"),
 
-    # Sidebar with a slider input for number of bins 
+    # Menu
     sidebarLayout(
+        # Sélection de l'analyseur
         sidebarPanel(
           selectInput(
             inputId = 'cal',
             label = 'Calibrateur',
-            choices = calibrateurs()$designation
+            choices = calibrateurs()$designation,
+            selected = 'NAUSINOOS'
           ),
+          
+          # Sélection du test réalisé
           selectInput(
-            inputId = 
+            inputId = 'test_real',
+            label = 'Test réalisé',
+            choices = paste(
+              testDone('NAUSINOOS')$debut,
+              testDone('NAUSINOOS')$test
+            )
           )
         ),
 
-        # Show a plot of the generated distribution
-        mainPanel(h1("Hello Shiny"))
+        # Graphe des consignes envoyées
+        mainPanel(plotOutput('consignes'))
     )
 )
 
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
+  # Si on change de calibrateur
+  observeEvent(input$cal, {
+    
+    # On charge les tests qui y sont associés
+    calibrateur <- input$cal
+    
+    testChoices <- paste(
+      testDone(calibrateur)$id_testrealise,
+      testDone(calibrateur)$debut,
+      testDone(calibrateur)$test
+    )
+    
 
+    if(length(testChoices) == 0){
+      testChoices <- "Pas de test"
+    }
+    
+    updateSelectInput(session, 'test_real',
+      choices = testChoices)
+    
+    if(input$test_real == "Pas de test"){
+      
+    }
+  })
+  
+  
+  output$consignes <- renderPlot(
+    plot(
+      getConsignes(input$test_real),
+      type="S"
+    )
+  )
 }
 
 # Run the application 

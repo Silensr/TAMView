@@ -1,5 +1,6 @@
 library(RPostgres)
 library(DBI)
+library(stringr)
 
 
 con <- dbConnect(
@@ -19,11 +20,12 @@ calibrateurs <- function(){
 
 formatDate <- function(d){
   return(
-    paste(day(d),' ', hour(d),':',minute(d), sep = "")
+    paste(day(d),' ',month(d, label = T),' ', hour(d),':',minute(d), sep = "")
   )
 }
 
 testDone <- function(calibrateur){
+  if(is.null(calibrateur)) {calibrateur <- 'NAUSINOOS'}
   req <- dbSendQuery(
     con, 
     paste(
@@ -36,9 +38,24 @@ testDone <- function(calibrateur){
   
   rep <- dbFetch(req)
   
-  rep$debut <- formatDate(rep$debut)
-  rep$fin <- formatDate(rep$fin)
-  
   return(rep)
 }
 
+getConsignes <- function(selectResponse){
+  id <- str_split_i(selectResponse, " ", 1)
+  
+  
+  req <- dbSendQuery(
+    con,
+    paste(
+      "SELECT horodatage, consigne FROM tam.consignes_view WHERE id_testrealise=",
+      id,
+      ";",
+      sep = ""
+    )
+  )
+  
+  print(dbFetch(req))
+}
+
+getConsignes("3 2023-06-30 15:17:54 Répétabilité O3")
