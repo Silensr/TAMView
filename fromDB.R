@@ -50,12 +50,12 @@ getConsignes <- function(selectResponse){
     paste(
       "SELECT horodatage, consigne FROM tam.consignes_view WHERE id_testrealise=",
       id,
-      ";",
+      " order by horodatage;",
       sep = ""
     )
   )
   
-  print(dbFetch(req))
+
+  return(dbFetch(req))
 }
 
-getConsignes("3 2023-06-30 15:17:54 Répétabilité O3")

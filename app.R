@@ -8,7 +8,6 @@
 #
 
 library(shiny)
-library(dplyr)
 
 source('./fromDB.R')
 
@@ -38,6 +37,11 @@ ui <- fluidPage(
               testDone('NAUSINOOS')$debut,
               testDone('NAUSINOOS')$test
             )
+          ),
+          
+          checkboxInput(
+            inputId = 'curveType',
+            label = 'Inverser la courbe'
           )
         ),
 
@@ -68,16 +72,13 @@ server <- function(input, output, session) {
     updateSelectInput(session, 'test_real',
       choices = testChoices)
     
-    if(input$test_real == "Pas de test"){
-      
-    }
   })
   
   
   output$consignes <- renderPlot(
     plot(
       getConsignes(input$test_real),
-      type="S"
+      type = "S"
     )
   )
 }
