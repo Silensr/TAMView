@@ -78,7 +78,7 @@ server <- function(input, output, session) {
   output$consignes <- renderPlot(
     plot(
       getConsignes(input$test_real),
-      type = "S"
+      type = "s"
     )
   )
 }
