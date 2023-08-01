@@ -15,72 +15,64 @@ source('./fromDB.R')
 # Interface
 ui <- fluidPage(
 
-    # Titre
-    titlePanel("Dashboard data TAM"),
+  # Titre
+  titlePanel("Traitement de données TAM"),
 
-    # Menu
-    sidebarLayout(
-        # Sélection de l'analyseur
-        sidebarPanel(
-          selectInput(
-            inputId = 'cal',
-            label = 'Calibrateur',
-            choices = calibrateurs()$designation,
-            selected = 'NAUSINOOS'
-          ),
-          
-          # Sélection du test réalisé
-          selectInput(
-            inputId = 'test_real',
-            label = 'Test réalisé',
-            choices = paste(
-              testDone('NAUSINOOS')$debut,
-              testDone('NAUSINOOS')$test
-            )
-          ),
-          
-          checkboxInput(
-            inputId = 'curveType',
-            label = 'Inverser la courbe'
-          )
-        ),
-
-        # Graphe des consignes envoyées
-        mainPanel(plotOutput('consignes'))
+  # Menu
+  sidebarLayout(
+    
+    sidebarPanel(
+      
+      #Modèles analyseurs
+      selectInput(
+        inputId = 'mod_ana',
+        label = 'Modèle analyseur',
+        selectize = F,
+        choices = getModeles()
+      ),
+      
+      #Analyseurs
+      selectInput(
+        inputId = 'ana',
+        label = 'Analyseur',
+        selectize = F,
+        choices = 'Analyseurs'
+      ),
+      
+      #Type des tests
+      selectInput(
+        inputId = 'type',
+        label = 'Type de test',
+        selectize = F,
+        choices = getTypes()
+      ),
+      
+      #Test à sélectionner
+      selectInput(
+        inputId = 'test',
+        label = 'Test séléctionné',
+        selectize = F,
+        choices = 'Test'
+      ),
+    ),
+    
+    mainPanel(
+      textOutput(outputId = "test")
     )
+  )
+
+  # Graphe des consignes envoyées
+    
+  
 )
 
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
-  # Si on change de calibrateur
-  observeEvent(input$cal, {
-    
-    # On charge les tests qui y sont associés
-    calibrateur <- input$cal
-    
-    testChoices <- paste(
-      testDone(calibrateur)$id_testrealise,
-      testDone(calibrateur)$debut,
-      testDone(calibrateur)$test
-    )
-    
-
-    if(length(testChoices) == 0){
-      testChoices <- "Pas de test"
-    }
-    
-    updateSelectInput(session, 'test_real',
-      choices = testChoices)
-    
+  observeEvent(input$mod_ana,{
+    updateSelectInput(session, "ana", choices = getAnalyseurs(input$mod_ana))
   })
   
-  
-  output$consignes <- renderPlot(
-    plot(
-      getConsignes(input$test_real),
-      type = "s"
-    )
-  )
+  output$test <- renderText({input$mod_ana})
 }
 
 # Run the application 

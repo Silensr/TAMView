@@ -3,59 +3,76 @@ library(DBI)
 library(stringr)
 
 
-con <- dbConnect(
-  Postgres(),
-  host='dublin',
-  port=5432,
-  user='metro',
-  password='metro@dublin',
-  dbname='metrologie'
-)
-
-calibrateurs <- function(){
-  req <- dbSendQuery(con, "SELECT designation FROM tam.calibrateur")
+connect <- function(){
   
-  return(dbFetch(req))
+  con <- dbConnect(
+    Postgres(),
+    host='dublin',
+    port=5432,
+    user='metro',
+    password='metro@dublin',
+    dbname='metrologie'
+  )
+  
+  return(con)
 }
 
-formatDate <- function(d){
-  return(
-    paste(day(d),' ',month(d, label = T),' ', hour(d),':',minute(d), sep = "")
-  )
-}
-
-testDone <- function(calibrateur){
-  if(is.null(calibrateur)) {calibrateur <- 'NAUSINOOS'}
-  req <- dbSendQuery(
-    con, 
-    paste(
-      "SELECT * FROM tam.test_done_view WHERE calibrateur='",
-      calibrateur,
-      "';",
-      sep = ""
-    )
-  )
+getModeles <- function(){
+  con <- connect()
+  
+  req <- dbSendQuery(con, "SELECT nom, id_modele FROM tam.modele_analyseur;")
   
   rep <- dbFetch(req)
   
-  return(rep)
+  dbClearResult(req)
+  dbDisconnect(con)
+  
+  vec <- rep$id_modele
+  names(vec) <- rep$nom
+  
+  
+  return(vec)
 }
 
-getConsignes <- function(selectResponse){
-  id <- str_split_i(selectResponse, " ", 1)
+getAnalyseurs <- function(modele) {
+  con <- connect()
   
+  req <- dbSendQuery(con, paste(
+    "SELECT designation, id_analyseur FROM tam.analyseur where modele=",
+    modele,
+    ";"
+  ))
+  rep <- dbFetch(req)
   
-  req <- dbSendQuery(
-    con,
-    paste(
-      "SELECT horodatage, consigne FROM tam.consignes_view WHERE id_testrealise=",
-      id,
-      " order by horodatage;",
-      sep = ""
-    )
-  )
+  dbClearResult(req)
+  dbDisconnect(con)
   
-
-  return(dbFetch(req))
+  vec <- rep$id_analyseur
+  names(vec) <- rep$designation
+  
+  return(vec)
 }
+
+getTypes <- function(){
+  con <- connect()
+  
+  req <- dbSendQuery(con, "SELECT designation, id_type_test from tam.type_test")
+  
+  rep <- dbFetch(req)
+  
+  dbClearResult(req)
+  dbDisconnect(con)
+  
+  vec <- rep$id_type_test
+  names(vec) <- rep$designation
+  
+  return(vec)
+}
+  
+# formatDate <- function(d){
+#   return(
+#     paste(day(d),' ',month(d, label = T),' ', hour(d),':',minute(d), sep = "")
+#   )
+# }
+
 
