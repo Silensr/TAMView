@@ -68,6 +68,51 @@ getTypes <- function(){
   
   return(vec)
 }
+
+getTests <- function(ana_id, type_id){
+  con <- connect()
+  
+  res <- dbSendQuery(
+    con, 
+    paste(
+      "SELECT debut, id_testrealise FROM tam.test_done_view WHERE id_type_test=",
+      type_id,
+      " and ana1=", ana_id," or ana2=", ana_id, " or ana3=", ana_id, ";",
+      sep = ""
+    )
+  )
+  
+  rep <- dbFetch(res)
+  
+  dbClearResult(res)
+  dbDisconnect(con)
+  
+  vec <- rep$id_testrealise
+  names(vec) <- rep$debut
+  
+  return(vec)
+}
+
+getConsignesFromTest <- function(test_id){
+  con <- connect()
+  
+  res <- dbSendQuery(
+    con,
+    paste(
+      "SELECT consigne, horodatage FROM tam.consignes_view WHERE id_test_realise=",
+      test_id,
+      ";",
+      sep = ""
+    )
+  )
+  
+  rep <- dbFetch(res)
+  
+  dbClearResult(res)
+  dbDisconnect(con)
+  
+  return(rep)
+}
   
 # formatDate <- function(d){
 #   return(
