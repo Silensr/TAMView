@@ -113,6 +113,28 @@ getConsignesFromTest <- function(test_id){
   
   return(rep)
 }
+
+getMesures <- function(id_test, id_analyseur){
+  con <- connect()
+  
+  res <- dbSendQuery(
+    con,
+    paste(
+      "SELECT n_mesure, c1, c2, c3  FROM tam.mesures_view WHERE",
+      "test_realise=",id_test,
+      "and id_analyseur=",id_analyseur,";"
+    )
+  )
+  
+  
+  
+  rep <- dbFetch(res)
+  
+  dbClearResult(res)
+  dbDisconnect(con)
+  
+  return(rep)
+}
   
 # formatDate <- function(d){
 #   return(

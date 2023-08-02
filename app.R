@@ -43,7 +43,7 @@ ui <- fluidPage(
         inputId = 'test',
         label = 'Test séléctionné',
         selectize = F,
-        choices = 'Test'
+        choices = 2
       )
     ),
     
@@ -51,8 +51,8 @@ ui <- fluidPage(
       div(
         h2("Consignes"),
         plotOutput("consignes"),
-        h2(Mesures),
-        div(id = "Mesures")
+        h2("Mesures"),
+        DT::dataTableOutput("mesures")
       )
     )
   )
@@ -76,8 +76,15 @@ server <- function(input, output, session) {
     plot(
       getConsignes(input$test)$horodatage,
       getConsignes(input$test)$consigne,
-      type = "s"
-    )
+      type = "s",
+      xlab = "Horodatage",
+      ylab = "Concentration"
+    ),
+
+  )
+  
+  output$mesures <- DT::renderDataTable(
+    DT::datatable(getMesures(input$test, input$ana), options = list(dom = 't'))
   )
   
 }
