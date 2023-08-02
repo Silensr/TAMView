@@ -93,13 +93,13 @@ getTests <- function(ana_id, type_id){
   return(vec)
 }
 
-getConsignesFromTest <- function(test_id){
+getConsignes <- function(test_id){
   con <- connect()
   
   res <- dbSendQuery(
     con,
     paste(
-      "SELECT consigne, horodatage FROM tam.consignes_view WHERE id_test_realise=",
+      "SELECT consigne, horodatage FROM tam.consignes_view WHERE id_testrealise=",
       test_id,
       ";",
       sep = ""

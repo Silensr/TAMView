@@ -1,7 +1,5 @@
 library(shiny)
 
-source('./fromDB.R')
-
 
 # Interface
 ui <- fluidPage(
@@ -48,22 +46,25 @@ ui <- fluidPage(
     ),
     
     mainPanel(
-      div(
+      div(id = "resultat",
         h2("Consignes"),
         plotOutput("consignes"),
         h2("Mesures"),
-        DT::dataTableOutput("mesures")
+        DT::dataTableOutput("mesures"),
+        div(id = "crit_perf")
       )
     )
   )
 )
 
-# Define server logic required to draw a histogram
 server <- function(input, output, session) {
+  
+  #Changement de la liste des analyseurs en fonction du modèle
   observeEvent(input$mod_ana,{
     updateSelectInput(session, "ana", choices = getAnalyseurs(input$mod_ana))
   })
   
+  #Changement de la liste des tests en fonction 
   observeEvent(input$ana, {
     updateSelectInput(session, 'test', choices = getTests(input$ana, input$type))
   })
@@ -80,13 +81,11 @@ server <- function(input, output, session) {
       xlab = "Horodatage",
       ylab = "Concentration"
     ),
-
   )
   
   output$mesures <- DT::renderDataTable(
     DT::datatable(getMesures(input$test, input$ana), options = list(dom = 't'))
   )
-  
 }
 
 # Run the application 
