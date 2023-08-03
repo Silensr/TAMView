@@ -120,13 +120,11 @@ getMesures <- function(id_test, id_analyseur){
   res <- dbSendQuery(
     con,
     paste(
-      "SELECT n_mesure, c1, c2, c3  FROM tam.mesures_view WHERE",
+      "SELECT c1, c2, c3, consigne, i_mesure, ordre, id_etape FROM tam.mesures_view WHERE",
       "test_realise=",id_test,
       "and id_analyseur=",id_analyseur,";"
     )
   )
-  
-  
   
   rep <- dbFetch(res)
   
@@ -134,6 +132,25 @@ getMesures <- function(id_test, id_analyseur){
   dbDisconnect(con)
   
   return(rep)
+}
+
+
+getGaz <- function(id_analyser) {
+  con <- connect()
+  
+  res <- dbSendQuery(
+    con,
+    "select gaz.molecule as gaz from tam.analyseur
+  	join tam.modele_analyseur on modele_analyseur.id_modele = modele
+  	join tam.lien_modele_gaz on lien_modele_gaz.id_modele = modele_analyseur.id_modele
+  	join tam.gaz on gaz.id_gaz = lien_modele_gaz.id_gaz
+  	where id_analyseur =", id_analyser, ";"
+  )
+  
+  rep <- dbFetch(res)
+  
+  dbClearResult(res)
+  dbDisconnect(con)
 }
   
 # formatDate <- function(d){
