@@ -137,7 +137,7 @@ getMesures <- function(id_test, id_analyseur){
 
 getGaz <- function(id_analyser) {
   con <- connect()
-  
+
   res <- dbSendQuery(
     con,
     "select gaz.molecule as gaz from tam.analyseur
@@ -146,11 +146,13 @@ getGaz <- function(id_analyser) {
   	join tam.gaz on gaz.id_gaz = lien_modele_gaz.id_gaz
   	where id_analyseur =", id_analyser, ";"
   )
-  
+
   rep <- dbFetch(res)
-  
+
   dbClearResult(res)
   dbDisconnect(con)
+  
+  return(rep)
 }
   
 # formatDate <- function(d){
