@@ -5,14 +5,14 @@ library(shiny)
 ui <- fluidPage(
 
   # Titre
-  titlePanel("Rapport de test TAM"),
+  titlePanel("Résultats de test TAM"),
 
   # Menu
   sidebarLayout(
     
     sidebarPanel(
       
-      #Modèles analyseurs
+      # Modèles analyseurs
       selectInput(
         inputId = 'mod_ana',
         label = 'Modèle analyseur',
@@ -20,7 +20,7 @@ ui <- fluidPage(
         choices = getModeles()
       ),
       
-      #Analyseurs
+      # Analyseurs
       selectInput(
         inputId = 'ana',
         label = 'Analyseur',
@@ -28,7 +28,7 @@ ui <- fluidPage(
         choices = 41
       ),
       
-      #Type des tests
+      # Type des tests
       selectInput(
         inputId = 'type',
         label = 'Type de test',
@@ -36,7 +36,7 @@ ui <- fluidPage(
         choices = getTypes()
       ),
       
-      #Test à sélectionner
+      # Test à sélectionner
       selectInput(
         inputId = 'test',
         label = 'Test séléctionné',
@@ -46,12 +46,13 @@ ui <- fluidPage(
     ),
     
     mainPanel(
-      div(id = "resultat",
-        h2("Consignes"),
-        plotOutput("consignes"),
+      div(
+        id = "resultat",
+        # h2("Consignes"),
+        # plotOutput("consignes"),
         h2("Mesures"),
-        DT::dataTableOutput("mesures"),
-        div(id = "crit_perf")
+        DT::DTOutput("mesures"),
+        div(id = 'crit')
       )
     )
   )
@@ -84,7 +85,13 @@ server <- function(input, output, session) {
   )
   
   output$mesures <- DT::renderDataTable(
-    DT::datatable(getMesures(input$test, input$ana), options = list(dom = 't'))
+    getDataTable(
+      getMesures(
+        input$test,
+        input$ana
+      ),
+      input$type
+    )
   )
 }
 

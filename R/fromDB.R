@@ -155,10 +155,3 @@ getGaz <- function(id_analyser) {
   return(rep)
 }
   
-# formatDate <- function(d){
-#   return(
-#     paste(day(d),' ',month(d, label = T),' ', hour(d),':',minute(d), sep = "")
-#   )
-# }
-
-
