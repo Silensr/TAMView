@@ -19,7 +19,7 @@ ui <- fluidPage(
         selectize = F,
         choices = getModeles()
       ),
-      
+
       # Analyseurs
       selectInput(
         inputId = 'ana',
@@ -27,7 +27,7 @@ ui <- fluidPage(
         selectize = F,
         choices = 41
       ),
-      
+
       # Type des tests
       selectInput(
         inputId = 'type',
@@ -81,7 +81,7 @@ server <- function(input, output, session) {
       type = "s",
       xlab = "Horodatage",
       ylab = "Concentration"
-    ),
+    )
   )
   
   output$mesures <- DT::renderDataTable(

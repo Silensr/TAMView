@@ -82,6 +82,7 @@ getTests <- function(ana_id, type_id){
     )
   )
   
+  
   rep <- dbFetch(res)
   
   dbClearResult(res)
@@ -120,9 +121,10 @@ getMesures <- function(id_test, id_analyseur){
   res <- dbSendQuery(
     con,
     paste(
-      "SELECT c1, c2, c3, consigne, i_mesure, ordre, id_etape FROM tam.mesures_view WHERE",
+      "SELECT c1, c2, c3, consigne,n_mesure, i_mesure, ordre, id_etape FROM tam.mesures_view WHERE",
       "test_realise=",id_test,
-      "and id_analyseur=",id_analyseur,";"
+      "AND id_analyseur=",id_analyseur,
+      "ORDER BY ordre;"
     )
   )
   
