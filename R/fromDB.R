@@ -137,16 +137,19 @@ getMesures <- function(id_test, id_analyseur){
 }
 
 
-getGaz <- function(id_analyser) {
+getGaz <- function(id_analyseur) {
   con <- connect()
 
   res <- dbSendQuery(
     con,
-    "select gaz.molecule as gaz from tam.analyseur
-  	join tam.modele_analyseur on modele_analyseur.id_modele = modele
-  	join tam.lien_modele_gaz on lien_modele_gaz.id_modele = modele_analyseur.id_modele
-  	join tam.gaz on gaz.id_gaz = lien_modele_gaz.id_gaz
-  	where id_analyseur =", id_analyser, ";"
+    paste(
+      "select gaz.molecule as gaz from tam.analyseur
+    	join tam.modele_analyseur on modele_analyseur.id_modele = modele
+    	join tam.lien_modele_gaz on lien_modele_gaz.id_modele = modele_analyseur.id_modele
+    	join tam.gaz on gaz.id_gaz = lien_modele_gaz.id_gaz
+    	where id_analyseur =", id_analyseur, ";"
+    )
+    
   )
 
   rep <- dbFetch(res)
@@ -156,4 +159,29 @@ getGaz <- function(id_analyser) {
   
   return(rep)
 }
+
+getCriteres <- function(id_analyseur, id_type_test) {
+  con <- connect()
+  
+  gaz <- getGaz(id_analyseur)$gaz
+  
+  
+  rep <- dbSendQuery(
+    con,
+    paste(
+      "select nom, valeur, superieur, norme_nom, intitule from tam.critere_view",
+      "where gaz in ('", paste0(gaz,  collapse = "','"),"')",
+      "and type_test =", id_type_test,
+      ";"
+    )
+  )
+  
+  res <- dbFetch(rep)
+  dbClearResult(rep)
+  
+  dbDisconnect(con)
+  
+  return(res)
+}
+
   

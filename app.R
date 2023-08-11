@@ -1,6 +1,7 @@
 library(shiny)
 
 
+
 # Interface
 ui <- fluidPage(
 
@@ -74,6 +75,7 @@ server <- function(input, output, session) {
     updateSelectInput(session, 'test', choices = getTests(input$ana, input$type))
   })
   
+  
   output$consignes <- renderPlot(
     plot(
       getConsignes(input$test)$horodatage,
@@ -83,6 +85,26 @@ server <- function(input, output, session) {
       ylab = "Concentration"
     )
   )
+  
+  observeEvent(input$test, {
+    insertUI(
+      "#crit",
+      getCritComp(
+        input$type,
+        get_values(
+          getMesures(
+            input$ana,
+            input$test
+          ),
+          input$type
+        ),
+        getCriteres(
+          input$ana,
+          input$type
+        )
+      )
+    )
+  })
   
   output$mesures <- DT::renderDataTable(
     getDataTable(

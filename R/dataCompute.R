@@ -1,38 +1,48 @@
 library(tidyverse)
 
-
-getDataTable <- function(mesures, type_test){
+# Cette fonction pour retourner les tbaleaux en version visuelles
+getDataTable <- function(mesures, type_test) {
   if(type_test == 1) {
     return(tablRepeta(mesures))
   } else if(type_test == 3) {
     return(tabl_linea(mesures))
+  } else if(type_test == 5) {
+    return(
+      DT::datatable(
+        tabl_rdt(mesures) %>% select(-ordre,-n_mesure),
+        options = list(
+          dom = "t"
+        )
+      )
+    )
   }
 }
 
-new_round <- function(x){
-  return(round(x, digits = 2))
+# Celle-ci pour aobtnier le dataframe
+get_values <- function(mesures, type_test) {
+  if(type_test == 1) {
+    return(tablRepeta(mesures))
+  } else if(type_test == 3) {
+    return(tabl_linea(mesures))
+  } else if(type_test == 5) {
+    return(tabl_rdt(mesures))
+  }
 }
 
-prep_table <- function(data){
+prep_table <- function(data) {
   return(
     data %>% 
-      group_by(consigne) %>%
-      bind_cols(
-        data %>%
-          group_by(consigne, i_mesure) %>%
-          transmute(
-            m1 = mean(c1),
-            m2 = mean(c2),
-            m3 = mean(c3)
-          )
-      ) %>% 
-      rename(consigne = 'consigne...4', i_mesure = 'i_mesure...6') %>%
-      select(-'consigne...9',-'i_mesure...10')
-      
+      group_by(ordre, n_mesure) %>%
+      mutate_at(c("c1","c2","c3"), ~na_if(., 0)) %>%
+      summarise(
+        m1 = mean(c1, na.rm = T),
+        m2 = mean(c2, na.rm = T),
+        m3 = mean(c3, na.rm = T)
+      )
   )
 }
 
-tablRepeta <- function(mesures){
+tablRepeta <- function(mesures) {
   mes <- mesures %>%
     filter(consigne == 0) %>%
     select(c1) %>%
@@ -71,7 +81,6 @@ tablRepeta <- function(mesures){
   )
 }
 
-
 tabl_linea <- function(mesures) {
   mes <- mesures %>%
 
@@ -104,8 +113,9 @@ tabl_linea <- function(mesures) {
     mutate(Résidus_relatifs= 100 * res/mu) %>%
     remove_rownames() %>%
     column_to_rownames(var = "consigne") %>%
-    t() %>%
-    mutate_if(is.numeric(), round, digits=3)
+    t()
+  
+  
   
   # On passe le dataframe dans DT avant de le renvoyer
   return(
@@ -126,4 +136,13 @@ tabl_linea <- function(mesures) {
   )
 }
 
-
+tabl_rdt <- function(mesures) {
+  return(
+    mesures %>%
+      prep_table() %>%
+      mutate(nom = paste("Mesure", ordre, n_mesure, sep="_")) %>%
+      column_to_rownames(var = "nom") %>%
+      rename(NO = m1, NOx = m2, NO2 = m3)
+    
+  )
+}
