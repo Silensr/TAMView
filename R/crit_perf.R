@@ -28,11 +28,19 @@ createComponents <- function(critList, critPerf) {
     crit_ui <- tagAppendChild(
       crit_ui,
       div(
-        strong(span(paste(crit$intitule, ":"))),
         p(
-          strong(span("Valeur :")),
+          strong(span(paste(crit$intitule, ":"))),
+          ifelse(xor(i$value <= crit$valeur, crit$superieur),"✓", "✗")
+        ),
+        p(
+          span(strong("Valeur :")),
           toString(round(i$value, digits = 3))
+        ),
+        p(
+          span(strong("EMT :")),
+          toString(crit$valeur)
         )
+        
       )
     )
   }

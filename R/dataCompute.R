@@ -1,6 +1,6 @@
 library(tidyverse)
+library(DT)
 
-options(pillar.sigfig=3)
 
 # Cette fonction pour retourner les tableaux en version visuelles
 getDataTable <- function(mesures, type_test) {
@@ -12,6 +12,7 @@ getDataTable <- function(mesures, type_test) {
     return(
       DT::datatable(
         tabl_rdt(mesures),
+        options = list(dom = "ltp")
       )
     )
   }
@@ -112,28 +113,30 @@ tabl_linea <- function(mesures) {
     cbind(Résidus = res) %>%
     
     # On calcul les résidus relatifs sauf pour 0
-    mutate(Résidus_relatifs= ifelse(consigne == 0,NA,100 * res/mu)) %>%
+    mutate(Résidus_relatifs= ifelse(consigne == 0, NA, 100 * res/mu)) %>%
     remove_rownames() %>%
     column_to_rownames(var = "consigne") %>%
     t()
   
+  datat <- datatable(
+    mes,
+    rownames = c(
+      paste("Mesure", 1:5),
+      "Moyenne",
+      "Ecart-Type",
+      "Résidu",
+      "Résidu relatif"
+    ),
+    options = list(
+      dom = ''
+    )
+  ) %>% formatRound(columns = 1:6) 
+    
   
   
   # On passe le dataframe dans DT avant de le renvoyer
   return(
-    DT::datatable(
-      mes,
-      rownames = c(
-        paste("Mesure", 1:5),
-        "Moyenne",
-        "Ecart-Type",
-        "Résidu",
-        "Résidu relatif"
-      ),
-      options = list(
-        dom = ''
-      )
-    )
+    datat
   )
 }
 
