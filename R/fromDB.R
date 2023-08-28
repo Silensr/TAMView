@@ -77,7 +77,7 @@ getTests <- function(ana_id, type_id){
     paste(
       "SELECT debut, id_testrealise FROM tam.test_done_view WHERE id_type_test=",
       type_id,
-      " and ana1=", ana_id," or ana2=", ana_id, " or ana3=", ana_id, ";",
+      " and (ana1=", ana_id," or ana2=", ana_id, " or ana3=", ana_id, ");",
       sep = ""
     )
   )
@@ -180,6 +180,8 @@ getCriteres <- function(id_analyseur, id_type_test) {
   dbClearResult(rep)
   
   dbDisconnect(con)
+  
+  print(res)
   
   return(res)
 }

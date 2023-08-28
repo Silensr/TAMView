@@ -13,27 +13,25 @@ getCritComp <- function(type, data, critPerf) {
 }
 
 createComponents <- function(critList, critPerf) {
-  crit_ui <- tagList(
+  crit_ui <- div(
+    id = "crit_perf",
     h2("Critères de performances")
   )
   
   for(i in critList){
     
+    print(i)
+    
     crit <- critPerf %>% filter(i$nom_crit == nom)
     
-    tagAppendChild(
+
+    crit_ui <- tagAppendChild(
       crit_ui,
       div(
-        span(paste(crit$intitule, ":")),
-        p(i$value), 
-        br(),
-        span("Critère de performance : "), 
-        p(crit$valeur),
-        span("Validité :"),
-        strong(
-          p(
-            ifelse(!xor(crit$superieur, i$value >= crit$valeur), "V", "X")
-          )
+        strong(span(paste(crit$intitule, ":"))),
+        p(
+          strong(span("Valeur :")),
+          toString(round(i$value, digits = 3))
         )
       )
     )
@@ -53,6 +51,8 @@ crit_rdt <- function(data) {
       m_NOx = mean(NOx)
     ) %>%
     select(-ordre)
+  
+  print(mes)
   
   rdt1 <-(slice(mes, 3) - slice(mes, 2)) %>%
     transmute(rdt = m_NOx / m_NO) %>%

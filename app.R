@@ -49,11 +49,9 @@ ui <- fluidPage(
     mainPanel(
       div(
         id = "resultat",
-        # h2("Consignes"),
-        # plotOutput("consignes"),
         h2("Mesures"),
         DT::DTOutput("mesures"),
-        div(id = 'crit')
+        uiOutput("crit")
       )
     )
   )
@@ -75,7 +73,7 @@ server <- function(input, output, session) {
     updateSelectInput(session, 'test', choices = getTests(input$ana, input$type))
   })
   
-  
+  # Tracé des consignes
   output$consignes <- renderPlot(
     plot(
       getConsignes(input$test)$horodatage,
@@ -86,15 +84,16 @@ server <- function(input, output, session) {
     )
   )
   
+  #Visualisation des critères de performances
   observeEvent(input$test, {
-    insertUI(
-      "#crit",
-      getCritComp(
+    output$crit <- renderUI({
+      
+      ui = getCritComp(
         input$type,
         get_values(
           getMesures(
-            input$ana,
-            input$test
+            input$test,
+            input$ana
           ),
           input$type
         ),
@@ -103,9 +102,10 @@ server <- function(input, output, session) {
           input$type
         )
       )
-    )
+    })
   })
   
+  # Tableau de mesure choisis
   output$mesures <- DT::renderDataTable(
     getDataTable(
       getMesures(

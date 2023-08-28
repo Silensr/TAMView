@@ -1,6 +1,8 @@
 library(tidyverse)
 
-# Cette fonction pour retourner les tbaleaux en version visuelles
+options(pillar.sigfig=3)
+
+# Cette fonction pour retourner les tableaux en version visuelles
 getDataTable <- function(mesures, type_test) {
   if(type_test == 1) {
     return(tablRepeta(mesures))
@@ -9,16 +11,13 @@ getDataTable <- function(mesures, type_test) {
   } else if(type_test == 5) {
     return(
       DT::datatable(
-        tabl_rdt(mesures) %>% select(-ordre,-n_mesure),
-        options = list(
-          dom = "t"
-        )
+        tabl_rdt(mesures),
       )
     )
   }
 }
 
-# Celle-ci pour aobtnier le dataframe
+# Celle-ci pour obtenir le dataframe
 get_values <- function(mesures, type_test) {
   if(type_test == 1) {
     return(tablRepeta(mesures))
@@ -29,6 +28,7 @@ get_values <- function(mesures, type_test) {
   }
 }
 
+#Cette fonction prépare les tables en 
 prep_table <- function(data) {
   return(
     data %>% 
@@ -91,7 +91,7 @@ tabl_linea <- function(mesures) {
     select(nom, consigne, c1) %>%
     
     # On pivote le tableau, avec les consignes en guise de noms de lignes.
-    # On ne les convertis pas en row_names tout de suite, on a des calculs à faire
+    # On ne les convertie pas en row_names tout de suite, on a des calculs à faire
     pivot_wider(
       names_from = nom,
       values_from = c1,
@@ -105,12 +105,14 @@ tabl_linea <- function(mesures) {
     ) 
   
   # Calcul des résidus
-  res <- resid(lm(consigne~mu, data = mes))
+  res <- abs(resid(lm(consigne~mu, data = mes)))
   
-  # J'ai choisis d'utiliser car mutate ne sembalit pas marcher
+  # Calcul des résidus relatifs
   mes <- mes %>% 
     cbind(Résidus = res) %>%
-    mutate(Résidus_relatifs= 100 * res/mu) %>%
+    
+    # On calcul les résidus relatifs sauf pour 0
+    mutate(Résidus_relatifs= ifelse(consigne == 0,NA,100 * res/mu)) %>%
     remove_rownames() %>%
     column_to_rownames(var = "consigne") %>%
     t()
@@ -129,8 +131,7 @@ tabl_linea <- function(mesures) {
         "Résidu relatif"
       ),
       options = list(
-        dom = '',
-        digits = 2
+        dom = ''
       )
     )
   )
@@ -142,7 +143,11 @@ tabl_rdt <- function(mesures) {
       prep_table() %>%
       mutate(nom = paste("Mesure", ordre, n_mesure, sep="_")) %>%
       column_to_rownames(var = "nom") %>%
-      rename(NO = m1, NOx = m2, NO2 = m3)
-    
+      mutate(
+        NO = round(m1, 3),
+        NOx = round(m2, 3),
+        NO2 = round(m3, 3)
+      ) %>%
+      select(-m1, -m2, -m3)
   )
 }
