@@ -1,7 +1,6 @@
 library(shiny)
 
 
-
 # Interface
 ui <- fluidPage(
 
@@ -47,10 +46,20 @@ ui <- fluidPage(
     ),
     
     mainPanel(
+      h2("Résultats"),
       div(
         id = "resultat",
-        h2("Mesures"),
-        DT::DTOutput("mesures"),
+        tabsetPanel(
+          type="tabs",
+          tabPanel(
+            "Tableau des mesures",
+            DTOutput("mesures")
+          ),
+          tabPanel(
+            "consignes",
+            plotOutput("consignes")
+          )
+        ),
         uiOutput("crit")
       )
     )
@@ -79,7 +88,7 @@ server <- function(input, output, session) {
       getConsignes(input$test)$horodatage,
       getConsignes(input$test)$consigne,
       type = "s",
-      xlab = "Horodatage",
+      xlab = "Heure",
       ylab = "Concentration"
     )
   )
@@ -106,7 +115,7 @@ server <- function(input, output, session) {
   })
   
   # Tableau de mesure choisis
-  output$mesures <- DT::renderDataTable(
+  output$mesures <- renderDataTable(
     getDataTable(
       getMesures(
         input$test,

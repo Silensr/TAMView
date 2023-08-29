@@ -102,7 +102,7 @@ getConsignes <- function(test_id){
     paste(
       "SELECT consigne, horodatage FROM tam.consignes_view WHERE id_testrealise=",
       test_id,
-      ";",
+      " ORDER BY horodatage;",
       sep = ""
     )
   )
