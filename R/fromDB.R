@@ -1,6 +1,6 @@
 library(RPostgres)
 library(DBI)
-library(stringr)
+
 
 
 connect <- function(){
@@ -180,8 +180,6 @@ getCriteres <- function(id_analyseur, id_type_test) {
   dbClearResult(rep)
   
   dbDisconnect(con)
-  
-  print(res)
   
   return(res)
 }

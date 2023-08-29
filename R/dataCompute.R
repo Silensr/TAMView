@@ -1,4 +1,6 @@
-library(tidyverse)
+library(dplyr)
+library(tidyr)
+library(tibble)
 library(DT)
 
 
@@ -10,7 +12,7 @@ getDataTable <- function(mesures, type_test) {
     return(tabl_linea(mesures))
   } else if(type_test == 5) {
     return(
-      DT::datatable(
+      datatable(
         tabl_rdt(mesures),
         options = list(dom = "ltp")
       )
@@ -66,7 +68,7 @@ tablRepeta <- function(mesures) {
   
   mes <- mes %>% bind_rows(crit)
   return(
-    DT::datatable(
+    datatable(
       {mes},
       rownames = c(paste("Mesure", 1:10), "Moyenne", "Ecart-Type"),
       

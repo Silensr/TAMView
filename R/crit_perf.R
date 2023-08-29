@@ -1,5 +1,7 @@
-library(tidyverse)
+library(dplyr)
+library(tidyr)
 library(shiny)
+
 
 getCritComp <- function(type, data, critPerf) {
   if(type == 5) {
@@ -20,7 +22,7 @@ createComponents <- function(critList, critPerf) {
   
   for(i in critList){
     
-    print(i)
+    
     
     crit <- critPerf %>% filter(i$nom_crit == nom)
     
@@ -60,9 +62,8 @@ crit_rdt <- function(data) {
     ) %>%
     select(-ordre)
   
-  print(mes)
-  
-  rdt1 <-(slice(mes, 3) - slice(mes, 2)) %>%
+
+  rdt1 <- (slice(mes, 3) - slice(mes, 2)) %>%
     transmute(rdt = m_NOx / m_NO) %>%
     pull(rdt)
   
