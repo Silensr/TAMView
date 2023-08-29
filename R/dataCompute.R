@@ -36,11 +36,11 @@ prep_table <- function(data) {
   return(
     data %>% 
       group_by(ordre, n_mesure) %>%
-      mutate_at(c("c1","c2","c3"), ~na_if(., 0)) %>%
+      mutate_at(c("cn1","cn2","cn"), ~na_if(., 0)) %>%
       summarise(
-        m1 = mean(c1, na.rm = T),
-        m2 = mean(c2, na.rm = T),
-        m3 = mean(c3, na.rm = T)
+        m1 = mean(cn1, na.rm = T),
+        m2 = mean(cn2, na.rm = T),
+        m3 = mean(cn3, na.rm = T)
       )
   )
 }
@@ -48,20 +48,20 @@ prep_table <- function(data) {
 tablRepeta <- function(mesures) {
   mes <- mesures %>%
     filter(consigne == 0) %>%
-    select(c1) %>%
+    select(cn1) %>%
     add_column(
-      c2 = mesures %>%
+      cn2 = mesures %>%
         filter(consigne != 0) %>%
-        pull(c1) 
+        pull(cn1) 
     ) %>%
-    select(c1,c2)
+    select(cn1,cn2)
   
   crit <- mes %>%
-    summarise(c1 = mean(c1), c2 = mean(c2)) %>%
+    summarise(cn1 = mean(cn1), cn2 = mean(cn2)) %>%
     bind_rows(
       mes %>% summarise(
-        c1 = round(sd(c1), 2), 
-        c2 = round(sd(c2), 2)
+        cn1 = round(sd(cn1), 2), 
+        cn2 = round(sd(cn2), 2)
       )
     ) 
     
@@ -91,13 +91,13 @@ tabl_linea <- function(mesures) {
     mutate(nom = paste("Mesure", n_mesure, sep = "")) %>%
     
     # On ne sélectionne que ce qui nous intéresse
-    select(nom, consigne, c1) %>%
+    select(nom, consigne, cn1) %>%
     
     # On pivote le tableau, avec les consignes en guise de noms de lignes.
     # On ne les convertie pas en row_names tout de suite, on a des calculs à faire
     pivot_wider(
       names_from = nom,
-      values_from = c1,
+      values_from = cn1,
     ) %>%
     
     # Calcul des moyennes et des écart-types pour chaque consigne
