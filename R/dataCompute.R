@@ -4,7 +4,7 @@ library(tibble)
 library(DT)
 
 
-# Cette fonction pour retourner les tableaux en version visuelles
+# Cette fonction pour obtenir les tableaux en composants shiny
 getDataTable <- function(mesures, type_test) {
   if(type_test == 1) {
     return(tablRepeta(mesures))
@@ -32,9 +32,6 @@ get_values <- function(mesures, type_test) {
 }
 
 
-
-
-
 #Cette fonction prépare les tables en 
 prep_table <- function(data) {
   return(
@@ -49,6 +46,7 @@ prep_table <- function(data) {
   )
 }
 
+# Traitement pour le tableau de répétabilité
 tablRepeta <- function(mesures) {
   mes <- mesures %>%
     filter(consigne == 0) %>%
@@ -88,6 +86,7 @@ tablRepeta <- function(mesures) {
   )
 }
 
+# Traitement pour le tableau de linéarité
 tabl_linea <- function(mesures) {
   mes <- mesures %>%
 
@@ -146,6 +145,7 @@ tabl_linea <- function(mesures) {
   )
 }
 
+# Traitement pour le tableau de rendement de conversion
 tabl_rdt <- function(mesures) {
   return(
     mesures %>%

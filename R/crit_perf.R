@@ -2,7 +2,7 @@ library(dplyr)
 library(tidyr)
 library(shiny)
 
-
+# Fonction servant à prendre le bon type de calcul
 getCritComp <- function(type, data, critPerf) {
   if(type == 5) {
     return(
@@ -14,6 +14,7 @@ getCritComp <- function(type, data, critPerf) {
   }
 }
 
+# Fonction créant le composant affichant les critères de performance
 createComponents <- function(critList, critPerf) {
   crit_ui <- div(
     id = "crit_perf",
@@ -51,6 +52,7 @@ createComponents <- function(critList, critPerf) {
   
 }
 
+# Calcul des critères de performance pour le rendement four
 crit_rdt <- function(data) {
   mes <- data %>%
     remove_rownames() %>%
