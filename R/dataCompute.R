@@ -31,12 +31,16 @@ get_values <- function(mesures, type_test) {
   }
 }
 
+
+
+
+
 #Cette fonction prépare les tables en 
 prep_table <- function(data) {
   return(
     data %>% 
       group_by(ordre, n_mesure) %>%
-      mutate_at(c("cn1","cn2","cn"), ~na_if(., 0)) %>%
+      mutate_at(c("cn1","cn2","cn3"), ~na_if(., 0)) %>%
       summarise(
         m1 = mean(cn1, na.rm = T),
         m2 = mean(cn2, na.rm = T),
