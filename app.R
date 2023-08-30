@@ -91,7 +91,11 @@ server <- function(input, output, session) {
   # Tracé des consignes
   output$consignes <- renderPlot(
     ggplot(getConsignes(input$test), aes(horodatage, consigne)) +
-      geom_step()
+      geom_step() +
+      labs(
+        x = "Heure",
+        y = "Concentration (ppb)"
+      )
   )
   
   #Visualisation des critères de performances
