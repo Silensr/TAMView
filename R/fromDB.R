@@ -121,10 +121,10 @@ getMesures <- function(id_test, id_analyseur){
   res <- dbSendQuery(
     con,
     paste(
-      "SELECT cn1, cn2, cn3, consigne,n_mesure, i_mesure, ordre, id_etape FROM tam.mesures_view WHERE",
+      "SELECT cn1, cn2, cn3, consigne,n_mesure, i_mesure, ordre, id_etape, moment FROM tam.mesures_view WHERE",
       "test_realise=",id_test,
       "AND id_analyseur=",id_analyseur,
-      "ORDER BY ordre;"
+      "ORDER BY moment;"
     )
   )
   

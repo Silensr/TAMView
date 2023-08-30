@@ -1,4 +1,5 @@
 library(shiny)
+library(ggplot2)
 
 
 # Interface
@@ -56,7 +57,12 @@ ui <- fluidPage(
             DTOutput("mesures")
           ),
           tabPanel(
-            "consignes",
+            "Mesures",
+            plotOutput("mesuresPlot")
+          ),
+          tabPanel(
+            "Consignes",
+            h3("Consignes éxecutées"),
             plotOutput("consignes")
           )
         ),
@@ -84,13 +90,8 @@ server <- function(input, output, session) {
   
   # Tracé des consignes
   output$consignes <- renderPlot(
-    plot(
-      getConsignes(input$test)$horodatage,
-      getConsignes(input$test)$consigne,
-      type = "s",
-      xlab = "Heure",
-      ylab = "Concentration"
-    )
+    ggplot(getConsignes(input$test), aes(horodatage, consigne)) +
+      geom_step()
   )
   
   #Visualisation des critères de performances
@@ -124,6 +125,19 @@ server <- function(input, output, session) {
       input$type
     )
   )
+  
+  output$mesuresPlot <- renderPlot(
+    ggplot(
+      getMesures(input$test, input$ana) %>%
+        pivot_longer(
+          cols = starts_with("cn"),
+          names_to = "canal",
+          values_to = "mesure"
+        ),
+      aes(moment, mesure)
+    ) + geom_point(aes(colour = factor(canal)))
+  )
+  
 }
 
 # Run the application 
